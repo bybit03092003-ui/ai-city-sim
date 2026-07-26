@@ -162,7 +162,7 @@ _PROVIDERS = {
 }
 
 
-def ask_json(provider: str, system_prompt: str, user_prompt: str, max_tokens: int = 500) -> dict:
+def ask_json(provider: str, system_prompt: str, user_prompt: str, max_tokens: int = 1200) -> dict:
     fn = _PROVIDERS.get(provider)
     if fn is None:
         raise ValueError(f"Unknown provider: {provider}")
