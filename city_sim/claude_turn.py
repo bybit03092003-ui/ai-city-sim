@@ -38,21 +38,21 @@ def cmd_show(args: argparse.Namespace) -> None:
         raise SystemExit(f"Unknown agent: {args.agent}")
 
     monthly_profit_goal = state["meta"]["monthly_profit_goal"]
-    deadline_week = state["meta"]["deadline_week"]
-    weeks_left = max(0, deadline_week - city.week)
-    personal_weekly_expenses = state["meta"]["personal_monthly_expenses"] / 4.345
+    deadline_period = state["meta"]["deadline_week"]
+    periods_left = max(0, deadline_period - city.week)
+    personal_period_expenses = state["meta"]["personal_monthly_expenses"] / 3
 
     print(city.describe())
-    if city.notes and city.notes[-1].startswith(f"[Неделя {city.week}]"):
+    if city.notes and city.notes[-1].startswith(f"[День {city.week * 10}]"):
         print(city.notes[-1])
     print(
-        f"\nДедлайн на неделе {deadline_week} (осталось {weeks_left} нед.). "
-        f"Цель -- пассивная прибыль от {monthly_profit_goal:.0f} руб/мес."
+        f"\nДедлайн на периоде {deadline_period} (день {deadline_period * 10}, осталось {periods_left} периодов "
+        f"по 10 дней). Цель -- пассивная прибыль от {monthly_profit_goal:.0f} руб/мес."
     )
     if agent.get("role") == "businessman":
         print(
-            f"Личные расходы (аренда/еда/на себя и девушку): ~{personal_weekly_expenses:.0f} руб/нед, "
-            f"списываются автоматически, отдельно от бизнес-издержек."
+            f"Личные расходы (аренда/еда/на себя и девушку): ~{personal_period_expenses:.0f} руб за 10-дневный "
+            f"период, списываются автоматически, отдельно от бизнес-издержек."
         )
 
     if agent["role"] == "regulator":
@@ -60,7 +60,8 @@ def cmd_show(args: argparse.Namespace) -> None:
         print(f"Персонаж: {agent['persona']}")
         if PENDING_REGULATOR_CASE_PATH.exists():
             case = json.loads(PENDING_REGULATOR_CASE_PATH.read_text(encoding="utf-8"))
-            print(f"\n(!) Есть дело на рассмотрении (неделя {case['week']}):")
+            case_period = case.get("period", case.get("week"))
+            print(f"\n(!) Есть дело на рассмотрении (день {case_period * 10}, период {case_period}):")
             print(f"    Цель проверки: {case['target']}")
             print(f"    Факты: {case['case_facts']}")
         else:
@@ -72,8 +73,8 @@ def cmd_show(args: argparse.Namespace) -> None:
     print(f"\n{args.agent} ({agent['business_name']}), сектор: {agent['sector']}")
     print(f"Персонаж: {agent['persona']}")
     print(
-        f"Капитал: {agent['cash']:.0f} руб, выручка/нед {agent['weekly_revenue']:.0f}, "
-        f"издержки/нед {agent['weekly_costs']:.0f}, недель подряд в плюсе: {agent['consecutive_profitable_weeks']}"
+        f"Капитал: {agent['cash']:.0f} руб, выручка/период {agent['weekly_revenue']:.0f}, "
+        f"издержки/период {agent['weekly_costs']:.0f}, периодов подряд в плюсе: {agent['consecutive_profitable_weeks']}"
     )
     if agent["history"]:
         print("История:")

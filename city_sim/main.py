@@ -46,7 +46,7 @@ def run(max_weeks_override: int | None = None) -> None:
     start_date = config["start_date"]
     max_weeks = max_weeks_override or config["max_weeks"]
     history_keep = config["history_keep"]
-    personal_weekly_expenses = config["personal_monthly_expenses"] / 4.345
+    personal_weekly_expenses = config["personal_monthly_expenses"] / 3
 
     businessmen, regulator = load_agents(config)
     city = CityState()
@@ -65,11 +65,11 @@ def run(max_weeks_override: int | None = None) -> None:
         with diary_path.open("a", encoding="utf-8") as f:
             f.write(text + "\n")
 
-    weekly_target = monthly_profit_goal / 4.345
+    period_target = monthly_profit_goal / 3
     diary(f"# Тестовый прогон города Барнаул, {start_date} (запуск {run_id})\n")
     diary(
-        f"Цель: пассивная прибыль от {monthly_profit_goal:.0f} руб/мес (~{weekly_target:.0f} руб/нед) "
-        f"не менее {stable_weeks_required} недель подряд, за {deadline_week} недель. Участники: "
+        f"Цель: пассивная прибыль от {monthly_profit_goal:.0f} руб/мес (~{period_target:.0f} руб/период) "
+        f"не менее {stable_weeks_required} периодов подряд, за {deadline_week} периодов по 10 дней. Участники: "
         + ", ".join(f"{b.name} ({b.business_name})" for b in businessmen)
         + f"; гос. органы: {regulator.name if regulator else '-'}.\n"
     )
@@ -77,8 +77,8 @@ def run(max_weeks_override: int | None = None) -> None:
     for _ in range(max_weeks):
         city.tick()
         print(f"\n=== {city.describe()} ===")
-        diary(f"\n## Неделя {city.week}\n\n*{city.describe()}*\n")
-        if city.notes and city.notes[-1].startswith(f"[Неделя {city.week}]"):
+        diary(f"\n## День {city.week * 10} (период {city.week})\n\n*{city.describe()}*\n")
+        if city.notes and city.notes[-1].startswith(f"[День {city.week * 10}]"):
             print(city.notes[-1])
             diary(f"> {city.notes[-1]}\n")
 

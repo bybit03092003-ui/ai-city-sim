@@ -1,8 +1,11 @@
 """City-level economic state for the Barnaul-2026 simulation.
 
 Keeps things intentionally simple: a handful of sectors with demand
-multipliers that drift week to week, plus a small chance of a
+multipliers that drift period to period, plus a small chance of a
 regulatory-check event landing on a random business each tick.
+
+One tick = one 10-day period (not a calendar week) -- `week` is really a
+period counter, kept as the field name for minimal churn.
 """
 from __future__ import annotations
 
@@ -32,7 +35,8 @@ class CityState:
             f"{s}: спрос x{v:.2f}" for s, v in self.sector_demand.items()
         )
         return (
-            f"Неделя {self.week}. Инфляция ~{self.inflation_pct_annual:.1f}%/год, "
+            f"День {self.week * 10} (период {self.week}, шаг 10 дней). "
+            f"Инфляция ~{self.inflation_pct_annual:.1f}%/год, "
             f"ключевая ставка {self.key_rate_pct:.1f}%. Спрос по секторам: {demand_lines}."
         )
 
@@ -58,7 +62,7 @@ class CityState:
                     "Налоговая объявила выборочные проверки малого бизнеса в этом квартале.",
                 ]
             )
-            self.notes.append(f"[Неделя {self.week}] {event}")
+            self.notes.append(f"[День {self.week * 10}] {event}")
 
 
 def roll_audit_target(business_agents: list) -> str | None:

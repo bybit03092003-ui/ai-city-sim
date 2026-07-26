@@ -1,9 +1,9 @@
 {
   "start_date": "2026-07-27",
   "monthly_profit_goal": 2000000,
-  "profit_stable_weeks_required": 4,
-  "deadline_week": 26,
-  "max_weeks": 52,
+  "profit_stable_weeks_required": 3,
+  "deadline_week": 18,
+  "max_weeks": 40,
   "history_keep": 6,
   "personal_monthly_expenses": 40000,
   "agents": [
