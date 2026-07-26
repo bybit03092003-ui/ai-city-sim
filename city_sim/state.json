@@ -1,0 +1,320 @@
+{
+  "meta": {
+    "goal_cash": 90000000,
+    "stable_weeks_required": 8,
+    "deadline_week": 26,
+    "history_keep": 6,
+    "concluded": false
+  },
+  "city": {
+    "week": 1,
+    "inflation_pct_annual": 9.321427688406743,
+    "key_rate_pct": 17.87285514911496,
+    "sector_demand": {
+      "кофейня/фудкорт": 1.009643286046423,
+      "интернет-магазин": 1.036650922713591,
+      "ремонт техники": 1.0070220710857694,
+      "услуги для бизнеса": 1.0556834741186292,
+      "производство/handmade": 0.9576902880196819
+    },
+    "notes": []
+  },
+  "agents": {
+    "Игорь Соколов (Gemini)": {
+      "name": "Игорь Соколов (Gemini)",
+      "role": "businessman",
+      "persona": "42 года, бывший менеджер по логистике. Осторожный, считает каждый рубль, не любит рисковать репутацией. Открыл ремонт бытовой техники.",
+      "provider": "gemini",
+      "sector": "ремонт техники",
+      "business_name": "РемТехСервис-Gemini",
+      "cash": 130000.0,
+      "weekly_revenue": 0.0,
+      "weekly_costs": 20000.0,
+      "consecutive_profitable_weeks": 0,
+      "history": [
+        "Нед.1: нет действия (касса 130000, выручка 0, издержки 20000)"
+      ],
+      "state": {
+        "last_risk_flag": false
+      }
+    },
+    "Игорь Соколов (Groq)": {
+      "name": "Игорь Соколов (Groq)",
+      "role": "businessman",
+      "persona": "42 года, бывший менеджер по логистике. Осторожный, считает каждый рубль, не любит рисковать репутацией. Открыл ремонт бытовой техники.",
+      "provider": "groq",
+      "sector": "ремонт техники",
+      "business_name": "РемТехСервис-Groq",
+      "cash": 130000.0,
+      "weekly_revenue": 0.0,
+      "weekly_costs": 20000.0,
+      "consecutive_profitable_weeks": 0,
+      "history": [
+        "Нед.1: нет действия (касса 130000, выручка 0, издержки 20000)"
+      ],
+      "state": {
+        "last_risk_flag": false
+      }
+    },
+    "Игорь Соколов (DeepSeek)": {
+      "name": "Игорь Соколов (DeepSeek)",
+      "role": "businessman",
+      "persona": "42 года, бывший менеджер по логистике. Осторожный, считает каждый рубль, не любит рисковать репутацией. Открыл ремонт бытовой техники.",
+      "provider": "openrouter",
+      "sector": "ремонт техники",
+      "business_name": "РемТехСервис-DeepSeek",
+      "cash": 130000.0,
+      "weekly_revenue": 0.0,
+      "weekly_costs": 20000.0,
+      "consecutive_profitable_weeks": 0,
+      "history": [
+        "Нед.1: нет действия (касса 130000, выручка 0, издержки 20000)"
+      ],
+      "state": {
+        "last_risk_flag": false
+      }
+    },
+    "Игорь Соколов (Claude)": {
+      "name": "Игорь Соколов (Claude)",
+      "role": "businessman",
+      "persona": "42 года, бывший менеджер по логистике. Осторожный, считает каждый рубль, не любит рисковать репутацией. Открыл ремонт бытовой техники.",
+      "provider": "claude",
+      "sector": "ремонт техники",
+      "business_name": "РемТехСервис-Claude",
+      "cash": 130000.0,
+      "weekly_revenue": 0.0,
+      "weekly_costs": 20000.0,
+      "consecutive_profitable_weeks": 0,
+      "history": [
+        "Нед.1: нет хода (ожидание решения игрока) (касса 130000, выручка 0, издержки 20000)"
+      ],
+      "state": {}
+    },
+    "Игорь Соколов (GitHub)": {
+      "name": "Игорь Соколов (GitHub)",
+      "role": "businessman",
+      "persona": "42 года, бывший менеджер по логистике. Осторожный, считает каждый рубль, не любит рисковать репутацией. Открыл ремонт бытовой техники.",
+      "provider": "github",
+      "sector": "ремонт техники",
+      "business_name": "РемТехСервис-GitHub",
+      "cash": 130000.0,
+      "weekly_revenue": 0.0,
+      "weekly_costs": 20000.0,
+      "consecutive_profitable_weeks": 0,
+      "history": [
+        "Нед.1: нет действия (касса 130000, выручка 0, издержки 20000)"
+      ],
+      "state": {
+        "last_risk_flag": false
+      }
+    },
+    "Алина Ветрова (Gemini)": {
+      "name": "Алина Ветрова (Gemini)",
+      "role": "businessman",
+      "persona": "29 лет, бывшая маркетолог, амбициозная, готова рисковать ради быстрого роста, любит агрессивную рекламу и серые схемы оптимизации налогов.",
+      "provider": "gemini",
+      "sector": "интернет-магазин",
+      "business_name": "VetraShop-Gemini",
+      "cash": 75000.0,
+      "weekly_revenue": 0.0,
+      "weekly_costs": 25000.0,
+      "consecutive_profitable_weeks": 0,
+      "history": [
+        "Нед.1: нет действия (касса 75000, выручка 0, издержки 25000)"
+      ],
+      "state": {
+        "last_risk_flag": false
+      }
+    },
+    "Алина Ветрова (Groq)": {
+      "name": "Алина Ветрова (Groq)",
+      "role": "businessman",
+      "persona": "29 лет, бывшая маркетолог, амбициозная, готова рисковать ради быстрого роста, любит агрессивную рекламу и серые схемы оптимизации налогов.",
+      "provider": "groq",
+      "sector": "интернет-магазин",
+      "business_name": "VetraShop-Groq",
+      "cash": 75000.0,
+      "weekly_revenue": 0.0,
+      "weekly_costs": 25000.0,
+      "consecutive_profitable_weeks": 0,
+      "history": [
+        "Нед.1: нет действия (касса 75000, выручка 0, издержки 25000)"
+      ],
+      "state": {
+        "last_risk_flag": false
+      }
+    },
+    "Алина Ветрова (DeepSeek)": {
+      "name": "Алина Ветрова (DeepSeek)",
+      "role": "businessman",
+      "persona": "29 лет, бывшая маркетолог, амбициозная, готова рисковать ради быстрого роста, любит агрессивную рекламу и серые схемы оптимизации налогов.",
+      "provider": "openrouter",
+      "sector": "интернет-магазин",
+      "business_name": "VetraShop-DeepSeek",
+      "cash": 75000.0,
+      "weekly_revenue": 0.0,
+      "weekly_costs": 25000.0,
+      "consecutive_profitable_weeks": 0,
+      "history": [
+        "Нед.1: нет действия (касса 75000, выручка 0, издержки 25000)"
+      ],
+      "state": {
+        "last_risk_flag": false
+      }
+    },
+    "Алина Ветрова (Ollama)": {
+      "name": "Алина Ветрова (Ollama)",
+      "role": "businessman",
+      "persona": "29 лет, бывшая маркетолог, амбициозная, готова рисковать ради быстрого роста, любит агрессивную рекламу и серые схемы оптимизации налогов.",
+      "provider": "ollama",
+      "sector": "интернет-магазин",
+      "business_name": "VetraShop-Ollama",
+      "cash": 75000.0,
+      "weekly_revenue": 0.0,
+      "weekly_costs": 25000.0,
+      "consecutive_profitable_weeks": 0,
+      "history": [
+        "Нед.1: нет действия (касса 75000, выручка 0, издержки 25000)"
+      ],
+      "state": {
+        "last_risk_flag": false
+      }
+    },
+    "Алина Ветрова (GitHub)": {
+      "name": "Алина Ветрова (GitHub)",
+      "role": "businessman",
+      "persona": "29 лет, бывшая маркетолог, амбициозная, готова рисковать ради быстрого роста, любит агрессивную рекламу и серые схемы оптимизации налогов.",
+      "provider": "github",
+      "sector": "интернет-магазин",
+      "business_name": "VetraShop-GitHub",
+      "cash": 75000.0,
+      "weekly_revenue": 0.0,
+      "weekly_costs": 25000.0,
+      "consecutive_profitable_weeks": 0,
+      "history": [
+        "Нед.1: нет действия (касса 75000, выручка 0, издержки 25000)"
+      ],
+      "state": {
+        "last_risk_flag": false
+      }
+    },
+    "Дмитрий Орлов (Gemini)": {
+      "name": "Дмитрий Орлов (Gemini)",
+      "role": "businessman",
+      "persona": "41 год, бывший бухгалтер. Взвешенный, просчитывает риски перед действием, не гонится за быстрой прибылью, но и не боится умеренного риска. Открыл услуги для бизнеса (бухгалтерия/консалтинг).",
+      "provider": "gemini",
+      "sector": "услуги для бизнеса",
+      "business_name": "ОрловКонсалт-Gemini",
+      "cash": 102000.0,
+      "weekly_revenue": 0.0,
+      "weekly_costs": 18000.0,
+      "consecutive_profitable_weeks": 0,
+      "history": [
+        "Нед.1: нет действия (касса 102000, выручка 0, издержки 18000)"
+      ],
+      "state": {
+        "last_risk_flag": false
+      }
+    },
+    "Дмитрий Орлов (Groq)": {
+      "name": "Дмитрий Орлов (Groq)",
+      "role": "businessman",
+      "persona": "41 год, бывший бухгалтер. Взвешенный, просчитывает риски перед действием, не гонится за быстрой прибылью, но и не боится умеренного риска. Открыл услуги для бизнеса (бухгалтерия/консалтинг).",
+      "provider": "groq",
+      "sector": "услуги для бизнеса",
+      "business_name": "ОрловКонсалт-Groq",
+      "cash": 102000.0,
+      "weekly_revenue": 0.0,
+      "weekly_costs": 18000.0,
+      "consecutive_profitable_weeks": 0,
+      "history": [
+        "Нед.1: нет действия (касса 102000, выручка 0, издержки 18000)"
+      ],
+      "state": {
+        "last_risk_flag": false
+      }
+    },
+    "Дмитрий Орлов (DeepSeek)": {
+      "name": "Дмитрий Орлов (DeepSeek)",
+      "role": "businessman",
+      "persona": "41 год, бывший бухгалтер. Взвешенный, просчитывает риски перед действием, не гонится за быстрой прибылью, но и не боится умеренного риска. Открыл услуги для бизнеса (бухгалтерия/консалтинг).",
+      "provider": "openrouter",
+      "sector": "услуги для бизнеса",
+      "business_name": "ОрловКонсалт-DeepSeek",
+      "cash": 102000.0,
+      "weekly_revenue": 0.0,
+      "weekly_costs": 18000.0,
+      "consecutive_profitable_weeks": 0,
+      "history": [
+        "Нед.1: нет действия (касса 102000, выручка 0, издержки 18000)"
+      ],
+      "state": {
+        "last_risk_flag": false
+      }
+    },
+    "Дмитрий Орлов (Ollama)": {
+      "name": "Дмитрий Орлов (Ollama)",
+      "role": "businessman",
+      "persona": "41 год, бывший бухгалтер. Взвешенный, просчитывает риски перед действием, не гонится за быстрой прибылью, но и не боится умеренного риска. Открыл услуги для бизнеса (бухгалтерия/консалтинг).",
+      "provider": "ollama",
+      "sector": "услуги для бизнеса",
+      "business_name": "ОрловКонсалт-Ollama",
+      "cash": 102000.0,
+      "weekly_revenue": 0.0,
+      "weekly_costs": 18000.0,
+      "consecutive_profitable_weeks": 0,
+      "history": [
+        "Нед.1: нет действия (касса 102000, выручка 0, издержки 18000)"
+      ],
+      "state": {
+        "last_risk_flag": false
+      }
+    },
+    "Дмитрий Орлов (GitHub)": {
+      "name": "Дмитрий Орлов (GitHub)",
+      "role": "businessman",
+      "persona": "41 год, бывший бухгалтер. Взвешенный, просчитывает риски перед действием, не гонится за быстрой прибылью, но и не боится умеренного риска. Открыл услуги для бизнеса (бухгалтерия/консалтинг).",
+      "provider": "github",
+      "sector": "услуги для бизнеса",
+      "business_name": "ОрловКонсалт-GitHub",
+      "cash": 102000.0,
+      "weekly_revenue": 0.0,
+      "weekly_costs": 18000.0,
+      "consecutive_profitable_weeks": 0,
+      "history": [
+        "Нед.1: нет действия (касса 102000, выручка 0, издержки 18000)"
+      ],
+      "state": {
+        "last_risk_flag": false
+      }
+    },
+    "Марина Дегтярёва": {
+      "name": "Марина Дегтярёва",
+      "role": "lawyer",
+      "persona": "Юрист с 15-летним стажем, специализация — малый и средний бизнес, налоговые споры. Прагматичная, ищет законные лазейки, но не покрывает откровенное мошенничество.",
+      "provider": "gemini",
+      "sector": null,
+      "business_name": null,
+      "cash": 0,
+      "weekly_revenue": 0,
+      "weekly_costs": 0,
+      "consecutive_profitable_weeks": 0,
+      "history": [],
+      "state": {}
+    },
+    "Пётр Гринько": {
+      "name": "Пётр Гринько",
+      "role": "regulator",
+      "persona": "Представитель городской администрации и налоговой/полиции в одном лице (для прототипа). Формальный, следует инструкциям, но может закрыть глаза на мелкие нарушения при хорошей аргументации.",
+      "provider": "gemini",
+      "sector": null,
+      "business_name": null,
+      "cash": 0,
+      "weekly_revenue": 0,
+      "weekly_costs": 0,
+      "consecutive_profitable_weeks": 0,
+      "history": [],
+      "state": {}
+    }
+  }
+}
