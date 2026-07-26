@@ -110,6 +110,7 @@ def main() -> None:
     agents = [a for a in all_agents if a.active]
     businessmen = [a for a in agents if a.role == "businessman"]
     regulator = next((a for a in agents if a.role == "regulator"), None)
+    lawyer = next((a for a in agents if a.role == "lawyer"), None)
 
     if not DIARY_PATH.exists():
         diary(f"# Летопись города Барнаул, {start_date} и далее\n")
@@ -117,6 +118,7 @@ def main() -> None:
             f"Цель: пассивная ежемесячная прибыль от {monthly_profit_goal:.0f} руб за {deadline_week} недель. "
             f"Участники: "
             + ", ".join(f"{b.name} ({b.business_name})" for b in businessmen)
+            + f"; юрист: {lawyer.name if lawyer else '-'}"
             + f"; гос. органы: {regulator.name if regulator else '-'}.\n"
         )
 
