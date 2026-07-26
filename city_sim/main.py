@@ -46,6 +46,7 @@ def run(max_weeks_override: int | None = None) -> None:
     start_date = config["start_date"]
     max_weeks = max_weeks_override or config["max_weeks"]
     history_keep = config["history_keep"]
+    personal_weekly_expenses = config["personal_monthly_expenses"] / 4.345
 
     businessmen, regulator = load_agents(config)
     city = CityState()
@@ -87,8 +88,9 @@ def run(max_weeks_override: int | None = None) -> None:
                           "reasoning": "", "cash_delta": 0, "revenue_change": 0, "cost_change": 0,
                           "risk_flag": False, "notes": ""}
             else:
-                result = businessman_turn(biz, city, monthly_profit_goal, deadline_week, start_date)
+                result = businessman_turn(biz, city, monthly_profit_goal, deadline_week, start_date, personal_weekly_expenses)
             apply_business_result(biz, result, city.week, history_keep)
+            biz.cash -= personal_weekly_expenses
 
             print(f"[{biz.name} | {biz.provider}] {result.get('action', '?')} -- {result.get('reasoning', '')}")
             print(f"    -> касса: {biz.cash:.0f} руб, выручка/нед: {biz.weekly_revenue:.0f}, издержки/нед: {biz.weekly_costs:.0f}")

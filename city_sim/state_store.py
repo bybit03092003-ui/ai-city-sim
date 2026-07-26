@@ -27,6 +27,7 @@ def init_state() -> dict:
             "start_date": config["start_date"],
             "monthly_profit_goal": config["monthly_profit_goal"],
             "profit_stable_weeks_required": config["profit_stable_weeks_required"],
+            "personal_monthly_expenses": config["personal_monthly_expenses"],
             "deadline_week": config["deadline_week"],
             "history_keep": config["history_keep"],
             "concluded": False,

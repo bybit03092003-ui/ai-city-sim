@@ -40,6 +40,7 @@ def cmd_show(args: argparse.Namespace) -> None:
     monthly_profit_goal = state["meta"]["monthly_profit_goal"]
     deadline_week = state["meta"]["deadline_week"]
     weeks_left = max(0, deadline_week - city.week)
+    personal_weekly_expenses = state["meta"]["personal_monthly_expenses"] / 4.345
 
     print(city.describe())
     if city.notes and city.notes[-1].startswith(f"[Неделя {city.week}]"):
@@ -48,6 +49,11 @@ def cmd_show(args: argparse.Namespace) -> None:
         f"\nДедлайн на неделе {deadline_week} (осталось {weeks_left} нед.). "
         f"Цель -- пассивная прибыль от {monthly_profit_goal:.0f} руб/мес."
     )
+    if agent.get("role") == "businessman":
+        print(
+            f"Личные расходы (аренда/еда/на себя и девушку): ~{personal_weekly_expenses:.0f} руб/нед, "
+            f"списываются автоматически, отдельно от бизнес-издержек."
+        )
 
     if agent["role"] == "regulator":
         print(f"\n{args.agent} (гос. органы)")

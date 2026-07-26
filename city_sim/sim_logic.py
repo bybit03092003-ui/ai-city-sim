@@ -13,10 +13,15 @@ BUSINESSMAN_SYSTEM_TMPL = """Ты играешь роль обычного че�
 Персонаж: {persona}
 Бизнес: "{business_name}", сектор: {sector}.
 
-Стартовый капитал — единственные деньги, которые есть, терять их некуда. Нужно с нуля: найти подходящее помещение,
-привести его в порядок под бизнес, оформить всё по закону (регистрация ИП/самозанятости, разрешения, договоры
-с клиентами, требования пожарной безопасности и т.п.), найти первых клиентов и постепенно выйти на ПАССИВНУЮ
-ежемесячную прибыль от {monthly_profit_goal:.0f} руб — и успеть за {weeks_left} недель (дедлайн на неделе {deadline_week}, это ~6 месяцев).
+Стартовый капитал — единственные деньги, которые есть, терять их некуда. ВАЖНО: помимо бизнеса у тебя есть обычная
+личная жизнь — аренда квартиры, еда, транспорт, расходы на себя и девушку. Это ~{personal_weekly_expenses:.0f} руб/нед
+списывается с твоего личного счёта АВТОМАТИЧЕСКИ и отдельно от решений по бизнесу (не указывай это в cash_delta —
+это уже учтено самой симуляцией), но ты должен это учитывать при планировании: деньги утекают каждую неделю, даже
+если бизнес пока не приносит дохода, так что затягивать с выходом на выручку нельзя.
+Нужно с нуля: найти подходящее помещение, привести его в порядок под бизнес, оформить всё по закону (регистрация
+ИП/самозанятости, разрешения, договоры с клиентами, требования пожарной безопасности и т.п.), найти первых клиентов
+и постепенно выйти на ПАССИВНУЮ ежемесячную прибыль от {monthly_profit_goal:.0f} руб — и успеть за {weeks_left} недель
+(дедлайн на неделе {deadline_week}, это ~6 месяцев).
 Каждую неделю принимай ОДНО конкретное действие (поиск/аренда помещения, переговоры, обустройство, реклама,
 оформление документов, работа с клиентами и т.п.), учитывая макроэкономику и конкуренцию. Действуй по закону —
 нарушения могут привлечь внимание гос. органов.
@@ -31,7 +36,8 @@ REGULATOR_SYSTEM_TMPL = """Ты — {persona}
 
 
 def businessman_prompt(
-    agent: Agent, city: CityState, monthly_profit_goal: float, deadline_week: int, start_date: str
+    agent: Agent, city: CityState, monthly_profit_goal: float, deadline_week: int, start_date: str,
+    personal_weekly_expenses: float,
 ) -> tuple[str, str]:
     weeks_left = max(0, deadline_week - city.week)
     system = BUSINESSMAN_SYSTEM_TMPL.format(
@@ -42,6 +48,7 @@ def businessman_prompt(
         deadline_week=deadline_week,
         weeks_left=weeks_left,
         start_date=start_date,
+        personal_weekly_expenses=personal_weekly_expenses,
     )
     history_text = "\n".join(agent.history) if agent.history else "(пока ничего не происходило)"
     user = (
@@ -55,9 +62,12 @@ def businessman_prompt(
 
 
 def businessman_turn(
-    agent: Agent, city: CityState, monthly_profit_goal: float, deadline_week: int, start_date: str
+    agent: Agent, city: CityState, monthly_profit_goal: float, deadline_week: int, start_date: str,
+    personal_weekly_expenses: float,
 ) -> dict:
-    system, user = businessman_prompt(agent, city, monthly_profit_goal, deadline_week, start_date)
+    system, user = businessman_prompt(
+        agent, city, monthly_profit_goal, deadline_week, start_date, personal_weekly_expenses
+    )
     result = ask_json(agent.provider, system, user)
     agent.state["last_risk_flag"] = bool(result.get("risk_flag", False))
     return result

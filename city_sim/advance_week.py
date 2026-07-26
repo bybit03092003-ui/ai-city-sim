@@ -99,6 +99,7 @@ def main() -> None:
     deadline_week = state["meta"]["deadline_week"]
     history_keep = state["meta"]["history_keep"]
     start_date = state["meta"]["start_date"]
+    personal_weekly_expenses = state["meta"]["personal_monthly_expenses"] / 4.345
 
     if state["meta"].get("concluded"):
         print(f"Эксперимент уже завершён (итоговый отчёт на неделе {deadline_week}). "
@@ -141,24 +142,32 @@ def main() -> None:
             else:
                 result = HOLD_RESULT
         else:
-            result = businessman_turn(biz, city, monthly_profit_goal, deadline_week, start_date)
+            result = businessman_turn(biz, city, monthly_profit_goal, deadline_week, start_date, personal_weekly_expenses)
 
         apply_business_result(biz, result, city.week, history_keep)
+        biz.cash -= personal_weekly_expenses
 
         print(f"[{biz.name} | {biz.provider}] {result.get('action', '?')} -- {result.get('reasoning', '')}")
-        print(f"    -> касса: {biz.cash:.0f} руб, выручка/нед: {biz.weekly_revenue:.0f}, издержки/нед: {biz.weekly_costs:.0f}")
+        print(f"    -> касса: {biz.cash:.0f} руб (после личных расходов {personal_weekly_expenses:.0f} руб/нед), "
+              f"выручка/нед: {biz.weekly_revenue:.0f}, издержки/нед: {biz.weekly_costs:.0f}")
 
         log({"week": city.week, "agent": biz.name, "type": "business_action", **result,
+             "personal_expenses": personal_weekly_expenses,
              "cash_after": biz.cash, "weekly_revenue": biz.weekly_revenue, "weekly_costs": biz.weekly_costs})
 
         diary(
             f"**{biz.name} ({biz.business_name}) [{biz.provider}]** — {result.get('action', '?')}\n"
             f"  Причина: {result.get('reasoning', '')}\n"
-            f"  Итог: касса {biz.cash:.0f} руб, выручка/нед {biz.weekly_revenue:.0f}, "
+            f"  Итог: касса {biz.cash:.0f} руб (за вычетом личных расходов на жизнь/аренду/Настю "
+            f"{personal_weekly_expenses:.0f} руб/нед), выручка/нед {biz.weekly_revenue:.0f}, "
             f"издержки/нед {biz.weekly_costs:.0f}, недель подряд в плюсе: {biz.consecutive_profitable_weeks}."
             + (f"\n  ⚠ риск/нарушение: {result.get('notes', '')}" if result.get("risk_flag") else "")
             + "\n"
         )
+
+        if biz.cash < 0:
+            print(f"    ⚠ {biz.name} ушёл в минус по личным деньгам!")
+            diary(f"  ⚠ **Внимание: касса {biz.name} ушла в минус ({biz.cash:.0f} руб) — личных денег не хватает.**\n")
 
     target_name = roll_audit_target(businessmen)
     if target_name and regulator:
