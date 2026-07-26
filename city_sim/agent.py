@@ -15,6 +15,7 @@ class Agent:
     weekly_revenue: float = 0
     weekly_costs: float = 0
     consecutive_profitable_weeks: int = 0
+    active: bool = True
     history: list[str] = field(default_factory=list)
     state: dict = field(default_factory=dict)  # scratch space, e.g. last_risk_flag
 

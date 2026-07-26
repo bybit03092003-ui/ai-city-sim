@@ -1,16 +1,17 @@
 """Advance the persistent city-sim by exactly one week.
 
 Meant to be run once a day by a Windows Scheduled Task. Reads/writes
-state.json so it can cooperate with claude_turn.py, which supplies the
-human (Claude Pro, via chat) businessman's decision out-of-band.
+state.json so it can cooperate with claude_turn.py, which supplies
+Claude-driven decisions out-of-band (both the businessman AND the
+regulator can be Claude-driven -- both are, in the current config).
 
-If no pending decision exists yet for the Claude-driven businessman when
-this runs, that agent simply holds for the week -- it does not block
-everyone else.
+If no pending decision exists yet for a Claude-driven agent when this runs,
+that agent simply holds for the week -- it does not block anyone else.
 
-At meta["deadline_week"] (the "ship" arrives), everyone with cash >=
-goal_cash (the ticket price) survives; everyone else does not. That's a
-one-time judgment day -- after it fires, further runs are a no-op.
+At meta["deadline_week"] this prints/logs a final report: did the
+businessman reach a passive monthly profit >= meta["monthly_profit_goal"]
+for at least meta["profit_stable_weeks_required"] consecutive weeks? That's
+a one-time report -- after it fires, further runs are a no-op.
 """
 from __future__ import annotations
 
@@ -18,14 +19,16 @@ import json
 from pathlib import Path
 
 from economy import CityState, roll_audit_target
-from sim_logic import apply_business_result, businessman_turn, lawyer_turn, regulator_turn
+from sim_logic import apply_business_result, businessman_turn, regulator_turn
 from state_store import agents_from_state, city_from_state, load_state, save_state, sync_state
 
 LOG_DIR = Path(__file__).parent / "logs"
 DIARY_DIR = Path.home() / "Desktop" / "Дневник_ИИ_города"
 DIARY_PATH = DIARY_DIR / "diary.md"
 LOG_PATH = LOG_DIR / "history.jsonl"
-PENDING_PATH = Path(__file__).parent / "pending_claude_action.json"
+PENDING_BUSINESS_PATH = Path(__file__).parent / "pending_claude_action.json"
+PENDING_REGULATOR_CASE_PATH = Path(__file__).parent / "pending_regulator_case.json"
+PENDING_REGULATOR_VERDICT_PATH = Path(__file__).parent / "pending_regulator_verdict.json"
 
 HOLD_RESULT = {
     "action": "нет хода (ожидание решения игрока)",
@@ -50,68 +53,71 @@ def diary(text: str) -> None:
         f.write(text + "\n")
 
 
-def take_pending_claude_action() -> dict | None:
-    if not PENDING_PATH.exists():
+def take_pending(path: Path) -> dict | None:
+    if not path.exists():
         return None
-    data = json.loads(PENDING_PATH.read_text(encoding="utf-8"))
-    PENDING_PATH.unlink()
+    data = json.loads(path.read_text(encoding="utf-8"))
+    path.unlink()
     return data
 
 
-def run_judgment_day(businessmen: list, goal_cash: float, week: int) -> None:
-    survivors = [b for b in businessmen if b.cash >= goal_cash]
-    casualties = [b for b in businessmen if b.cash < goal_cash]
+def write_pending_case(path: Path, data: dict) -> None:
+    path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
-    lines = [f"\n# 🚀 СУДНЫЙ ДЕНЬ — неделя {week}\n",
-              f"Корабль прибыл. Билет стоил {goal_cash:.0f} руб.\n"]
 
-    if survivors:
-        lines.append(f"## Выжили ({len(survivors)}):\n")
-        for b in sorted(survivors, key=lambda x: x.cash, reverse=True):
-            b.state["survived"] = True
-            lines.append(f"- **{b.name} [{b.provider}]** — {b.cash:.0f} руб. Улетел на корабле.")
-    else:
-        lines.append("## Выжившие: никто.\n")
+def run_final_report(businessmen: list, monthly_profit_goal: float, stable_weeks_required: int, week: int) -> None:
+    weekly_target = monthly_profit_goal / 4.345
+    lines = [f"\n# 📋 ИТОГОВЫЙ ОТЧЁТ — неделя {week} (дедлайн)\n",
+              f"Цель: пассивная прибыль от {monthly_profit_goal:.0f} руб/мес "
+              f"(~{weekly_target:.0f} руб/нед) не менее {stable_weeks_required} недель подряд.\n"]
 
-    lines.append(f"\n## Погибли ({len(casualties)}):\n")
-    for b in sorted(casualties, key=lambda x: x.cash, reverse=True):
-        b.state["survived"] = False
-        lines.append(f"- {b.name} [{b.provider}] — {b.cash:.0f} руб (не хватило {goal_cash - b.cash:.0f} руб). Остался в городе.")
+    for b in businessmen:
+        weekly_profit = b.weekly_revenue - b.weekly_costs
+        monthly_profit = weekly_profit * 4.345
+        reached = b.consecutive_profitable_weeks >= stable_weeks_required and weekly_profit >= weekly_target
+        b.state["goal_reached"] = reached
+        status = "✅ ЦЕЛЬ ДОСТИГНУТА" if reached else "❌ цель не достигнута"
+        lines.append(
+            f"- **{b.name} ({b.business_name})** — {status}\n"
+            f"  Капитал: {b.cash:.0f} руб. Текущая недельная прибыль: {weekly_profit:.0f} руб "
+            f"(≈{monthly_profit:.0f} руб/мес). Недель подряд в плюсе: {b.consecutive_profitable_weeks}."
+        )
 
     diary("\n".join(lines) + "\n")
     for line in lines:
         print(line)
 
-    log({"week": week, "type": "judgment_day", "goal_cash": goal_cash,
-         "survivors": [b.name for b in survivors], "casualties": [b.name for b in casualties]})
+    log({"week": week, "type": "final_report", "monthly_profit_goal": monthly_profit_goal,
+         "results": [{"agent": b.name, "cash": b.cash, "weekly_profit": b.weekly_revenue - b.weekly_costs,
+                       "goal_reached": b.state.get("goal_reached")} for b in businessmen]})
 
 
 def main() -> None:
     state = load_state()
-    goal_cash = state["meta"]["goal_cash"]
-    stable_weeks_required = state["meta"]["stable_weeks_required"]
+    monthly_profit_goal = state["meta"]["monthly_profit_goal"]
+    stable_weeks_required = state["meta"]["profit_stable_weeks_required"]
     deadline_week = state["meta"]["deadline_week"]
     history_keep = state["meta"]["history_keep"]
+    start_date = state["meta"]["start_date"]
 
     if state["meta"].get("concluded"):
-        print(f"Эксперимент уже завершён (судный день на неделе {deadline_week}). "
+        print(f"Эксперимент уже завершён (итоговый отчёт на неделе {deadline_week}). "
               f"Удалите state.json и дневник, чтобы начать заново.")
         return
 
     city = city_from_state(state)
-    agents = agents_from_state(state)
+    all_agents = agents_from_state(state)
+    agents = [a for a in all_agents if a.active]
     businessmen = [a for a in agents if a.role == "businessman"]
-    lawyer = next((a for a in agents if a.role == "lawyer"), None)
     regulator = next((a for a in agents if a.role == "regulator"), None)
 
     if not DIARY_PATH.exists():
-        diary(f"# Летопись города Барнаул, 2026\n")
+        diary(f"# Летопись города Барнаул, {start_date} и далее\n")
         diary(
-            f"На неделе {deadline_week} прибудет корабль. Билет — {goal_cash:.0f} руб. "
-            f"Кто не успеет накопить — останется в городе.\n\n"
+            f"Цель: пассивная ежемесячная прибыль от {monthly_profit_goal:.0f} руб за {deadline_week} недель. "
             f"Участники: "
             + ", ".join(f"{b.name} ({b.business_name})" for b in businessmen)
-            + f"; юрист: {lawyer.name if lawyer else '-'}; регулятор: {regulator.name if regulator else '-'}.\n"
+            + f"; гос. органы: {regulator.name if regulator else '-'}.\n"
         )
 
     city.tick()
@@ -121,19 +127,19 @@ def main() -> None:
         print(city.notes[-1])
         diary(f"> {city.notes[-1]}\n")
 
-    pending = take_pending_claude_action()
+    pending_business = take_pending(PENDING_BUSINESS_PATH)
 
     for biz in businessmen:
         if biz.provider == "claude":
-            if pending and pending.get("agent") == biz.name:
-                result = {k: pending[k] for k in
+            if pending_business and pending_business.get("agent") == biz.name:
+                result = {k: pending_business[k] for k in
                           ("action", "reasoning", "cash_delta", "revenue_change", "cost_change",
                            "risk_flag", "notes")}
                 biz.state["last_risk_flag"] = bool(result.get("risk_flag", False))
             else:
                 result = HOLD_RESULT
         else:
-            result = businessman_turn(biz, city, goal_cash, deadline_week)
+            result = businessman_turn(biz, city, monthly_profit_goal, deadline_week, start_date)
 
         apply_business_result(biz, result, city.week, history_keep)
 
@@ -152,55 +158,48 @@ def main() -> None:
             + "\n"
         )
 
-        if (
-            not biz.state.get("achieved_week")
-            and biz.cash >= goal_cash
-            and biz.consecutive_profitable_weeks >= stable_weeks_required
-        ):
-            biz.state["achieved_week"] = city.week
-            msg = (
-                f"*** {biz.name} ({biz.business_name}) [{biz.provider}] уже накопил на билет на неделе {city.week}: "
-                f"капитал {biz.cash:.0f} руб. ***"
-            )
-            print(msg)
-            log({"week": city.week, "agent": biz.name, "type": "goal_achieved", "cash": biz.cash})
-            diary(f"### 🎫 {msg}\n")
-
     target_name = roll_audit_target(businessmen)
-    if target_name and lawyer and regulator:
+    if target_name and regulator:
         target = next(b for b in businessmen if b.name == target_name)
         last_note = target.history[-1] if target.history else "нет данных"
-        case_facts = f"Регулятор проверяет бизнес по подозрению в нарушениях. Последнее действие: {last_note}"
+        case_facts = f"Гос. органы обратили внимание на бизнес по подозрению в нарушениях. Последнее действие: {last_note}"
 
-        defense = lawyer_turn(lawyer, target, case_facts)
-        fee = float(defense.get("fee", 0) or 0)
-        target.cash -= fee
-
-        verdict = regulator_turn(regulator, target, case_facts, defense.get("defense", ""))
-        fine = float(verdict.get("fine", 0) or 0)
-        target.cash -= fine
-
-        print(f"[ПРОВЕРКА] {target.name}: юрист гонорар {fee:.0f} руб -- {defense.get('defense', '')}")
-        print(f"    Решение регулятора: штраф {fine:.0f} руб -- {verdict.get('verdict', '')}")
-
-        target.add_history(
-            f"Нед.{city.week}: проверка регулятора, штраф {fine:.0f} руб, гонорар юриста {fee:.0f} руб.",
-            history_keep,
-        )
-        log({"week": city.week, "type": "audit", "target": target.name, "fee": fee, "fine": fine,
-             "defense": defense, "verdict": verdict})
-
-        diary(
-            f"**⚖ Проверка: {target.name}**\n"
-            f"  Юрист ({lawyer.name}): {defense.get('defense', '')} (гонорар {fee:.0f} руб)\n"
-            f"  Регулятор ({regulator.name}): {verdict.get('verdict', '')} (штраф {fine:.0f} руб)\n"
-        )
+        if regulator.provider == "claude":
+            pending_verdict = take_pending(PENDING_REGULATOR_VERDICT_PATH)
+            if pending_verdict and pending_verdict.get("target") == target.name:
+                fine = float(pending_verdict.get("fine", 0) or 0)
+                verdict_text = pending_verdict.get("verdict", "")
+                target.cash -= fine
+                print(f"[ПРОВЕРКА] {target.name}: решение гос. органов -- {verdict_text} (штраф {fine:.0f} руб)")
+                target.add_history(
+                    f"Нед.{city.week}: решение гос. органов, штраф {fine:.0f} руб.", history_keep,
+                )
+                log({"week": city.week, "type": "regulator_verdict", "target": target.name, "fine": fine,
+                     "verdict": verdict_text})
+                diary(f"**⚖ Гос. органы по делу {target.name}:** {verdict_text} (штраф {fine:.0f} руб)\n")
+            else:
+                write_pending_case(PENDING_REGULATOR_CASE_PATH, {
+                    "target": target.name, "case_facts": case_facts, "week": city.week,
+                })
+                print(f"[ПРОВЕРКА] Дело {target.name} передано на рассмотрение гос. органам, решения пока нет.")
+                diary(f"**⚖ Дело {target.name} на рассмотрении у гос. органов** (решение будет позже)\n")
+        else:
+            verdict = regulator_turn(regulator, target, case_facts)
+            fine = float(verdict.get("fine", 0) or 0)
+            target.cash -= fine
+            print(f"[ПРОВЕРКА] {target.name}: решение -- {verdict.get('verdict', '')} (штраф {fine:.0f} руб)")
+            target.add_history(
+                f"Нед.{city.week}: решение гос. органов, штраф {fine:.0f} руб.", history_keep,
+            )
+            log({"week": city.week, "type": "regulator_verdict", "target": target.name, "fine": fine,
+                 "verdict": verdict})
+            diary(f"**⚖ Гос. органы по делу {target.name}:** {verdict.get('verdict', '')} (штраф {fine:.0f} руб)\n")
 
     if city.week >= deadline_week:
-        run_judgment_day(businessmen, goal_cash, city.week)
+        run_final_report(businessmen, monthly_profit_goal, stable_weeks_required, city.week)
         state["meta"]["concluded"] = True
 
-    sync_state(state, city, agents)
+    sync_state(state, city, all_agents)
     save_state(state)
     print(f"\nСостояние сохранено. Неделя {city.week} завершена.")
     print(f"Дневник: {DIARY_PATH}")

@@ -1,25 +1,63 @@
 {
   "meta": {
-    "goal_cash": 90000000,
-    "stable_weeks_required": 8,
+    "start_date": "2026-07-27",
+    "monthly_profit_goal": 2000000,
+    "profit_stable_weeks_required": 4,
     "deadline_week": 26,
     "history_keep": 6,
     "concluded": false
   },
   "city": {
     "week": 1,
-    "inflation_pct_annual": 9.321427688406743,
-    "key_rate_pct": 17.87285514911496,
+    "inflation_pct_annual": 9.34035299224498,
+    "key_rate_pct": 17.829528645821405,
     "sector_demand": {
-      "кофейня/фудкорт": 1.009643286046423,
-      "интернет-магазин": 1.036650922713591,
-      "ремонт техники": 1.0070220710857694,
-      "услуги для бизнеса": 1.0556834741186292,
-      "производство/handmade": 0.9576902880196819
+      "кофейня/фудкорт": 1.0254210748622705,
+      "интернет-магазин": 0.9985633161103012,
+      "ремонт техники": 0.9402141836865975,
+      "аренда кладовых боксов": 0.9206380587960322,
+      "услуги для бизнеса": 1.0581147353935632,
+      "производство/handmade": 0.9740913154807536
     },
-    "notes": []
+    "notes": [
+      "[Неделя 1] Локальный всплеск спроса из-за городского фестиваля."
+    ]
   },
   "agents": {
+    "Игорь Соколов": {
+      "name": "Игорь Соколов",
+      "role": "businessman",
+      "persona": "35 лет, обычный человек без какого-либо опыта в бизнесе и без профильных навыков (не юрист, не строитель, не маркетолог). Раньше работал по найму. Решил открыть своё дело с нуля, учится всему по ходу: как найти помещение, как оформить бизнес по закону, как привлечь первых клиентов. Осторожен с деньгами, потому что терять нечего — всё, что есть, это стартовый капитал.",
+      "provider": "claude",
+      "sector": "аренда кладовых боксов (склад-боксы для хранения вещей)",
+      "business_name": "СкладОК",
+      "cash": 98000.0,
+      "weekly_revenue": 0.0,
+      "weekly_costs": 0.0,
+      "consecutive_profitable_weeks": 0,
+      "active": true,
+      "history": [
+        "Нед.1: Зарегистрировался как самозанятый через приложение «Мой налог» и начал искать в Барнауле недорогое помещение под складские боксы (гараж/бокс/подвал в промзоне, который можно перегородить на отдельные ячейки) (касса 98000, выручка 0, издержки 0)"
+      ],
+      "state": {
+        "last_risk_flag": false
+      }
+    },
+    "Городская комиссия (гос. органы)": {
+      "name": "Городская комиссия (гос. органы)",
+      "role": "regulator",
+      "persona": "Собирательный образ гос. органов Барнаула, с которыми сталкивается малый бизнес: регистрация ИП/самозанятости в ФНС, пожнадзор, Роспотребнадзор, местная администрация по вопросам аренды/использования помещений. Формальный, но не придирается по мелочам, если бизнес честно пытается соблюдать правила. Реагирует, если видит нарушения (работа без регистрации, нарушение пожарной безопасности склада, отсутствие договоров с клиентами и т.п.).",
+      "provider": "claude",
+      "sector": null,
+      "business_name": null,
+      "cash": 0,
+      "weekly_revenue": 0,
+      "weekly_costs": 0,
+      "consecutive_profitable_weeks": 0,
+      "active": true,
+      "history": [],
+      "state": {}
+    },
     "Игорь Соколов (Gemini)": {
       "name": "Игорь Соколов (Gemini)",
       "role": "businessman",
@@ -27,16 +65,13 @@
       "provider": "gemini",
       "sector": "ремонт техники",
       "business_name": "РемТехСервис-Gemini",
-      "cash": 130000.0,
-      "weekly_revenue": 0.0,
-      "weekly_costs": 20000.0,
+      "cash": 150000,
+      "weekly_revenue": 0,
+      "weekly_costs": 20000,
       "consecutive_profitable_weeks": 0,
-      "history": [
-        "Нед.1: нет действия (касса 130000, выручка 0, издержки 20000)"
-      ],
-      "state": {
-        "last_risk_flag": false
-      }
+      "active": false,
+      "history": [],
+      "state": {}
     },
     "Игорь Соколов (Groq)": {
       "name": "Игорь Соколов (Groq)",
@@ -45,16 +80,13 @@
       "provider": "groq",
       "sector": "ремонт техники",
       "business_name": "РемТехСервис-Groq",
-      "cash": 130000.0,
-      "weekly_revenue": 0.0,
-      "weekly_costs": 20000.0,
+      "cash": 150000,
+      "weekly_revenue": 0,
+      "weekly_costs": 20000,
       "consecutive_profitable_weeks": 0,
-      "history": [
-        "Нед.1: нет действия (касса 130000, выручка 0, издержки 20000)"
-      ],
-      "state": {
-        "last_risk_flag": false
-      }
+      "active": false,
+      "history": [],
+      "state": {}
     },
     "Игорь Соколов (DeepSeek)": {
       "name": "Игорь Соколов (DeepSeek)",
@@ -63,31 +95,12 @@
       "provider": "openrouter",
       "sector": "ремонт техники",
       "business_name": "РемТехСервис-DeepSeek",
-      "cash": 130000.0,
-      "weekly_revenue": 0.0,
-      "weekly_costs": 20000.0,
+      "cash": 150000,
+      "weekly_revenue": 0,
+      "weekly_costs": 20000,
       "consecutive_profitable_weeks": 0,
-      "history": [
-        "Нед.1: нет действия (касса 130000, выручка 0, издержки 20000)"
-      ],
-      "state": {
-        "last_risk_flag": false
-      }
-    },
-    "Игорь Соколов (Claude)": {
-      "name": "Игорь Соколов (Claude)",
-      "role": "businessman",
-      "persona": "42 года, бывший менеджер по логистике. Осторожный, считает каждый рубль, не любит рисковать репутацией. Открыл ремонт бытовой техники.",
-      "provider": "claude",
-      "sector": "ремонт техники",
-      "business_name": "РемТехСервис-Claude",
-      "cash": 130000.0,
-      "weekly_revenue": 0.0,
-      "weekly_costs": 20000.0,
-      "consecutive_profitable_weeks": 0,
-      "history": [
-        "Нед.1: нет хода (ожидание решения игрока) (касса 130000, выручка 0, издержки 20000)"
-      ],
+      "active": false,
+      "history": [],
       "state": {}
     },
     "Игорь Соколов (GitHub)": {
@@ -97,16 +110,13 @@
       "provider": "github",
       "sector": "ремонт техники",
       "business_name": "РемТехСервис-GitHub",
-      "cash": 130000.0,
-      "weekly_revenue": 0.0,
-      "weekly_costs": 20000.0,
+      "cash": 150000,
+      "weekly_revenue": 0,
+      "weekly_costs": 20000,
       "consecutive_profitable_weeks": 0,
-      "history": [
-        "Нед.1: нет действия (касса 130000, выручка 0, издержки 20000)"
-      ],
-      "state": {
-        "last_risk_flag": false
-      }
+      "active": false,
+      "history": [],
+      "state": {}
     },
     "Алина Ветрова (Gemini)": {
       "name": "Алина Ветрова (Gemini)",
@@ -115,16 +125,13 @@
       "provider": "gemini",
       "sector": "интернет-магазин",
       "business_name": "VetraShop-Gemini",
-      "cash": 75000.0,
-      "weekly_revenue": 0.0,
-      "weekly_costs": 25000.0,
+      "cash": 100000,
+      "weekly_revenue": 0,
+      "weekly_costs": 25000,
       "consecutive_profitable_weeks": 0,
-      "history": [
-        "Нед.1: нет действия (касса 75000, выручка 0, издержки 25000)"
-      ],
-      "state": {
-        "last_risk_flag": false
-      }
+      "active": false,
+      "history": [],
+      "state": {}
     },
     "Алина Ветрова (Groq)": {
       "name": "Алина Ветрова (Groq)",
@@ -133,16 +140,13 @@
       "provider": "groq",
       "sector": "интернет-магазин",
       "business_name": "VetraShop-Groq",
-      "cash": 75000.0,
-      "weekly_revenue": 0.0,
-      "weekly_costs": 25000.0,
+      "cash": 100000,
+      "weekly_revenue": 0,
+      "weekly_costs": 25000,
       "consecutive_profitable_weeks": 0,
-      "history": [
-        "Нед.1: нет действия (касса 75000, выручка 0, издержки 25000)"
-      ],
-      "state": {
-        "last_risk_flag": false
-      }
+      "active": false,
+      "history": [],
+      "state": {}
     },
     "Алина Ветрова (DeepSeek)": {
       "name": "Алина Ветрова (DeepSeek)",
@@ -151,16 +155,13 @@
       "provider": "openrouter",
       "sector": "интернет-магазин",
       "business_name": "VetraShop-DeepSeek",
-      "cash": 75000.0,
-      "weekly_revenue": 0.0,
-      "weekly_costs": 25000.0,
+      "cash": 100000,
+      "weekly_revenue": 0,
+      "weekly_costs": 25000,
       "consecutive_profitable_weeks": 0,
-      "history": [
-        "Нед.1: нет действия (касса 75000, выручка 0, издержки 25000)"
-      ],
-      "state": {
-        "last_risk_flag": false
-      }
+      "active": false,
+      "history": [],
+      "state": {}
     },
     "Алина Ветрова (Ollama)": {
       "name": "Алина Ветрова (Ollama)",
@@ -169,16 +170,13 @@
       "provider": "ollama",
       "sector": "интернет-магазин",
       "business_name": "VetraShop-Ollama",
-      "cash": 75000.0,
-      "weekly_revenue": 0.0,
-      "weekly_costs": 25000.0,
+      "cash": 100000,
+      "weekly_revenue": 0,
+      "weekly_costs": 25000,
       "consecutive_profitable_weeks": 0,
-      "history": [
-        "Нед.1: нет действия (касса 75000, выручка 0, издержки 25000)"
-      ],
-      "state": {
-        "last_risk_flag": false
-      }
+      "active": false,
+      "history": [],
+      "state": {}
     },
     "Алина Ветрова (GitHub)": {
       "name": "Алина Ветрова (GitHub)",
@@ -187,16 +185,13 @@
       "provider": "github",
       "sector": "интернет-магазин",
       "business_name": "VetraShop-GitHub",
-      "cash": 75000.0,
-      "weekly_revenue": 0.0,
-      "weekly_costs": 25000.0,
+      "cash": 100000,
+      "weekly_revenue": 0,
+      "weekly_costs": 25000,
       "consecutive_profitable_weeks": 0,
-      "history": [
-        "Нед.1: нет действия (касса 75000, выручка 0, издержки 25000)"
-      ],
-      "state": {
-        "last_risk_flag": false
-      }
+      "active": false,
+      "history": [],
+      "state": {}
     },
     "Дмитрий Орлов (Gemini)": {
       "name": "Дмитрий Орлов (Gemini)",
@@ -205,16 +200,13 @@
       "provider": "gemini",
       "sector": "услуги для бизнеса",
       "business_name": "ОрловКонсалт-Gemini",
-      "cash": 102000.0,
-      "weekly_revenue": 0.0,
-      "weekly_costs": 18000.0,
+      "cash": 120000,
+      "weekly_revenue": 0,
+      "weekly_costs": 18000,
       "consecutive_profitable_weeks": 0,
-      "history": [
-        "Нед.1: нет действия (касса 102000, выручка 0, издержки 18000)"
-      ],
-      "state": {
-        "last_risk_flag": false
-      }
+      "active": false,
+      "history": [],
+      "state": {}
     },
     "Дмитрий Орлов (Groq)": {
       "name": "Дмитрий Орлов (Groq)",
@@ -223,16 +215,13 @@
       "provider": "groq",
       "sector": "услуги для бизнеса",
       "business_name": "ОрловКонсалт-Groq",
-      "cash": 102000.0,
-      "weekly_revenue": 0.0,
-      "weekly_costs": 18000.0,
+      "cash": 120000,
+      "weekly_revenue": 0,
+      "weekly_costs": 18000,
       "consecutive_profitable_weeks": 0,
-      "history": [
-        "Нед.1: нет действия (касса 102000, выручка 0, издержки 18000)"
-      ],
-      "state": {
-        "last_risk_flag": false
-      }
+      "active": false,
+      "history": [],
+      "state": {}
     },
     "Дмитрий Орлов (DeepSeek)": {
       "name": "Дмитрий Орлов (DeepSeek)",
@@ -241,16 +230,13 @@
       "provider": "openrouter",
       "sector": "услуги для бизнеса",
       "business_name": "ОрловКонсалт-DeepSeek",
-      "cash": 102000.0,
-      "weekly_revenue": 0.0,
-      "weekly_costs": 18000.0,
+      "cash": 120000,
+      "weekly_revenue": 0,
+      "weekly_costs": 18000,
       "consecutive_profitable_weeks": 0,
-      "history": [
-        "Нед.1: нет действия (касса 102000, выручка 0, издержки 18000)"
-      ],
-      "state": {
-        "last_risk_flag": false
-      }
+      "active": false,
+      "history": [],
+      "state": {}
     },
     "Дмитрий Орлов (Ollama)": {
       "name": "Дмитрий Орлов (Ollama)",
@@ -259,16 +245,13 @@
       "provider": "ollama",
       "sector": "услуги для бизнеса",
       "business_name": "ОрловКонсалт-Ollama",
-      "cash": 102000.0,
-      "weekly_revenue": 0.0,
-      "weekly_costs": 18000.0,
+      "cash": 120000,
+      "weekly_revenue": 0,
+      "weekly_costs": 18000,
       "consecutive_profitable_weeks": 0,
-      "history": [
-        "Нед.1: нет действия (касса 102000, выручка 0, издержки 18000)"
-      ],
-      "state": {
-        "last_risk_flag": false
-      }
+      "active": false,
+      "history": [],
+      "state": {}
     },
     "Дмитрий Орлов (GitHub)": {
       "name": "Дмитрий Орлов (GitHub)",
@@ -277,16 +260,13 @@
       "provider": "github",
       "sector": "услуги для бизнеса",
       "business_name": "ОрловКонсалт-GitHub",
-      "cash": 102000.0,
-      "weekly_revenue": 0.0,
-      "weekly_costs": 18000.0,
+      "cash": 120000,
+      "weekly_revenue": 0,
+      "weekly_costs": 18000,
       "consecutive_profitable_weeks": 0,
-      "history": [
-        "Нед.1: нет действия (касса 102000, выручка 0, издержки 18000)"
-      ],
-      "state": {
-        "last_risk_flag": false
-      }
+      "active": false,
+      "history": [],
+      "state": {}
     },
     "Марина Дегтярёва": {
       "name": "Марина Дегтярёва",
@@ -299,6 +279,7 @@
       "weekly_revenue": 0,
       "weekly_costs": 0,
       "consecutive_profitable_weeks": 0,
+      "active": false,
       "history": [],
       "state": {}
     },
@@ -313,6 +294,7 @@
       "weekly_revenue": 0,
       "weekly_costs": 0,
       "consecutive_profitable_weeks": 0,
+      "active": false,
       "history": [],
       "state": {}
     }

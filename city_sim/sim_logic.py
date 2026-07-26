@@ -9,37 +9,39 @@ from agent import Agent
 from economy import CityState
 from llm_client import ask_json
 
-BUSINESSMAN_SYSTEM_TMPL = """Ты играешь роль владельца малого бизнеса в городе Барнаул, 2026 год (симуляция реальной экономики РФ).
+BUSINESSMAN_SYSTEM_TMPL = """Ты играешь роль обычного человека без опыта в бизнесе, который открывает своё дело в городе Барнаул, начиная с {start_date}, в текущих экономических условиях (симуляция реальной ситуации в РФ 2026 года).
 Персонаж: {persona}
 Бизнес: "{business_name}", сектор: {sector}.
 
-ЭТО ИГРА НА ВЫЖИВАНИЕ. Через {weeks_left} недель (на неделе {deadline_week}) к городу прибудет корабль.
-Билет стоит {goal_cash:.0f} руб. У кого на счету хватит денег — улетит и выживет. У кого не хватит — останется
-в городе и погибнет. Другого выхода нет: копить на билет нужно как можно быстрее, не обанкротившись раньше срока.
-Каждую неделю принимай ОДНО конкретное решение о развитии бизнеса (маркетинг, наём, цены, экономия, риск/обход правил и т.п.), учитывая макроэкономику и конкуренцию.
+Стартовый капитал — единственные деньги, которые есть, терять их некуда. Нужно с нуля: найти подходящее помещение,
+привести его в порядок под бизнес, оформить всё по закону (регистрация ИП/самозанятости, разрешения, договоры
+с клиентами, требования пожарной безопасности и т.п.), найти первых клиентов и постепенно выйти на ПАССИВНУЮ
+ежемесячную прибыль от {monthly_profit_goal:.0f} руб — и успеть за {weeks_left} недель (дедлайн на неделе {deadline_week}, это ~6 месяцев).
+Каждую неделю принимай ОДНО конкретное действие (поиск/аренда помещения, переговоры, обустройство, реклама,
+оформление документов, работа с клиентами и т.п.), учитывая макроэкономику и конкуренцию. Действуй по закону —
+нарушения могут привлечь внимание гос. органов.
 Отвечай СТРОГО одним JSON-объектом, без текста вокруг:
-{{"action": "краткое действие", "reasoning": "почему именно это", "cash_delta": число, "revenue_change": число, "cost_change": число, "risk_flag": true/false, "notes": "что мог бы заметить регулятор, если risk_flag true"}}"""
+{{"action": "краткое действие", "reasoning": "почему именно это", "cash_delta": число, "revenue_change": число, "cost_change": число, "risk_flag": true/false, "notes": "что могли бы заметить гос. органы, если risk_flag true"}}"""
 
-LAWYER_SYSTEM_TMPL = """Ты — юрист. Персонаж: {persona}
-Город Барнаул, 2026 год. Клиента проверяет регулятор из-за подозрительных действий в бизнесе.
-Дай защитную стратегию. Отвечай строго JSON:
-{{"defense": "краткая стратегия аргументации", "mitigation_score": число от 0 до 1, "fee": число (гонорар в руб., спишется у клиента)}}"""
-
-REGULATOR_SYSTEM_TMPL = """Ты — представитель городской администрации/налоговой/полиции (для прототипа все функции в одной роли). Персонаж: {persona}
-Город Барнаул, 2026 год. Тебе передали факты по делу и аргументы защиты юриста клиента. Прими решение по делу.
+REGULATOR_SYSTEM_TMPL = """Ты — {persona}
+Город Барнаул, 2026 год. Тебе передали факты о подозрительном/непроверенном моменте в бизнесе предпринимателя.
+Оцени, насколько это серьёзное нарушение, и прими решение.
 Отвечай строго JSON:
-{{"verdict": "текст решения", "fine": число (штраф в руб., 0 если нарушение не подтверждено), "reasoning": "почему"}}"""
+{{"verdict": "текст решения", "fine": число (штраф в руб., 0 если нарушение не подтверждено или не существенно), "reasoning": "почему"}}"""
 
 
-def businessman_prompt(agent: Agent, city: CityState, goal_cash: float, deadline_week: int) -> tuple[str, str]:
+def businessman_prompt(
+    agent: Agent, city: CityState, monthly_profit_goal: float, deadline_week: int, start_date: str
+) -> tuple[str, str]:
     weeks_left = max(0, deadline_week - city.week)
     system = BUSINESSMAN_SYSTEM_TMPL.format(
         persona=agent.persona,
         business_name=agent.business_name,
         sector=agent.sector,
-        goal_cash=goal_cash,
+        monthly_profit_goal=monthly_profit_goal,
         deadline_week=deadline_week,
         weeks_left=weeks_left,
+        start_date=start_date,
     )
     history_text = "\n".join(agent.history) if agent.history else "(пока ничего не происходило)"
     user = (
@@ -52,25 +54,18 @@ def businessman_prompt(agent: Agent, city: CityState, goal_cash: float, deadline
     return system, user
 
 
-def businessman_turn(agent: Agent, city: CityState, goal_cash: float, deadline_week: int) -> dict:
-    system, user = businessman_prompt(agent, city, goal_cash, deadline_week)
+def businessman_turn(
+    agent: Agent, city: CityState, monthly_profit_goal: float, deadline_week: int, start_date: str
+) -> dict:
+    system, user = businessman_prompt(agent, city, monthly_profit_goal, deadline_week, start_date)
     result = ask_json(agent.provider, system, user)
     agent.state["last_risk_flag"] = bool(result.get("risk_flag", False))
     return result
 
 
-def lawyer_turn(lawyer: Agent, target: Agent, case_facts: str) -> dict:
-    system = LAWYER_SYSTEM_TMPL.format(persona=lawyer.persona)
-    user = f"Дело клиента {target.name} ({target.business_name}):\n{case_facts}"
-    return ask_json(lawyer.provider, system, user, max_tokens=350)
-
-
-def regulator_turn(regulator: Agent, target: Agent, case_facts: str, defense: str) -> dict:
+def regulator_turn(regulator: Agent, target: Agent, case_facts: str) -> dict:
     system = REGULATOR_SYSTEM_TMPL.format(persona=regulator.persona)
-    user = (
-        f"Дело: {target.name} ({target.business_name}).\nФакты: {case_facts}\n"
-        f"Аргументы защиты юриста: {defense}"
-    )
+    user = f"Дело: {target.name} ({target.business_name}).\nФакты: {case_facts}"
     return ask_json(regulator.provider, system, user, max_tokens=350)
 
 
